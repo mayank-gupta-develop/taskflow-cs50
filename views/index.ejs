@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TaskFlow</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<header class="top-bar">
+  <h1>📋 TaskFlow</h1>
+  <a href="/logout" class="logout">Logout</a>
+</header>
+
+<!-- ===============================
+     ADD TASK
+================================ -->
+<div class="card">
+  <form class="task-form" method="POST" action="/tasks">
+    <input
+      name="title"
+      placeholder="New task..."
+      required
+    >
+
+    <input type="date" name="due_date">
+
+    <select name="priority">
+      <option value="low">low</option>
+      <option value="medium" selected>medium</option>
+      <option value="high">high</option>
+    </select>
+
+    <button type="submit">Add</button>
+  </form>
+</div>
+
+<!-- ===============================
+     TASK LIST
+================================ -->
+<ul class="task-list">
+  <% if (tasks.length === 0) { %>
+    <li class="empty">No tasks yet. Add one above 👆</li>
+  <% } %>
+
+  <% tasks.forEach(task => { %>
+    <li
+      class="task <%= task.completed_at ? 'completed' : '' %>"
+      id="task-<%= task.id %>"
+      data-title="<%= task.title %>"
+      data-due="<%= task.due_date || '' %>"
+      data-priority="<%= task.priority %>"
+    >
+
+      <!-- Checkbox -->
+      <input
+        type="checkbox"
+        <%= task.completed_at ? "checked" : "" %>
+        onclick="toggleTask(<%= task.id %>)"
+      >
+
+      <!-- Task Info -->
+      <div class="task-info">
+        <strong><%= task.title %></strong>
+
+        <% if (task.due_date) { %>
+          <small>📅 <%= task.due_date %></small>
+        <% } %>
+
+        <span class="priority <%= task.priority %>">
+          <%= task.priority %>
+        </span>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button
+          class="edit"
+          title="Edit"
+          onclick="editTask(<%= task.id %>)"
+        >✏️</button>
+
+        <button
+          class="delete"
+          title="Delete"
+          onclick="deleteTask(<%= task.id %>)"
+        >✖</button>
+      </div>
+
+    </li>
+  <% }) %>
+</ul>
+
+<!-- ===============================
+     PRODUCTIVITY
+================================ -->
+<div class="card stats">
+  <h2>📊 Productivity</h2>
+
+  <div class="charts">
+    <div class="chart-box">
+      <canvas id="monthlyChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="yearlyChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ===============================
+     SCRIPTS
+================================ -->
+<script src="/js/app.js"></script>
+
+</body>
+</html>
